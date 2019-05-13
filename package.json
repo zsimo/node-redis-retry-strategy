@@ -1,6 +1,6 @@
 {
   "name": "node-redis-retry-strategy",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "My custom node_redis retry_strategy function",
   "main": "./index.js",
   "scripts": {
