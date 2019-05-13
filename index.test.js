@@ -80,4 +80,15 @@ describe("node-redis-retry-strategy", () => {
         })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
     });
 
+    test("change wait_time", () => {
+        var strategy = retryStrategy({
+            delay_of_retry_attempts: 500,
+            number_of_retry_attempts: 5,
+            wait_time: 1000
+        });
+        expect(strategy({
+            attempt: 12
+        })).toEqual(times.WAIT_TIME);
+    });
+
 });
