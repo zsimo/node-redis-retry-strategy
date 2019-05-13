@@ -1,0 +1,17 @@
+language: node_js
+node_js:
+  - "10"
+sudo: false
+# Only build tags
+if: tag IS present
+script:
+  - npm run test-coverage
+after_success:
+  - npm run report-coverage
+  - npm run report-codacy
+deploy:
+  provider: npm
+  email: "zsimo30@gmail.com"
+  api_key: "1457f97e-b6d6-44e0-a8b1-ad66b8b5526d"
+  on:
+    tags: true

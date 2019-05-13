@@ -1,0 +1,39 @@
+{
+  "name": "node-redis-retry-strategy",
+  "version": "1.0.0",
+  "description": "My custom node_redis retry_strategy function",
+  "main": "./index.js",
+  "scripts": {
+    "test": "jest",
+    "test-coverage": "jest --collect-coverage",
+    "report-coverage": "cat ./coverage/lcov.info | codecov",
+    "report-codacy": "cat ./coverage/lcov.info | codacy-coverage"
+  },
+  "author": "Simone Sacchi <zsimo30@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zsimo/node-redis-retry-strategy.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zsimo/node-redis-retry-strategy/issues"
+  },
+  "homepage": "https://github.com/zsimo/node-redis-retry-strategy",
+  "engines": {
+    "node": ">=8"
+  },
+  "devDependencies": {
+    "codacy-coverage": "^3.4.0",
+    "codecov": "^3.4.0",
+    "jest": "^24.8.0"
+  },
+  "files": [
+    "index.js",
+    "times.js"
+  ],
+  "keywords": [
+    "node",
+    "redis"
+  ],
+  "dependencies": {}
+}
