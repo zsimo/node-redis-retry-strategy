@@ -3,7 +3,7 @@ node_js:
   - "10"
 sudo: false
 # Only build tags
-if: tag IS present
+#if: tag IS present
 script:
   - npm run test-coverage
 after_success:
