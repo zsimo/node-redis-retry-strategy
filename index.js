@@ -27,7 +27,7 @@ module.exports = function init (moduleOptions) {
      * @author Simone Sacchi
      * @version 2019/05/08
      */
-    return function retryStrategy(options) {
+    return function retryStrategy (options) {
 
         if (!times.NUMBER_OF_RETRY_ATTEMPTS) {
             // End reconnecting with built in error
@@ -40,9 +40,9 @@ module.exports = function init (moduleOptions) {
         }
 
         if ((options.attempt % (times.NUMBER_OF_RETRY_ATTEMPTS + 1)) === 0) {
-            return times.WAIT_TIME
+            return times.WAIT_TIME;
         } else {
-            return times.DELAY_OF_RETRY_ATTEMPTS
+            return times.DELAY_OF_RETRY_ATTEMPTS;
         }
     };
 
