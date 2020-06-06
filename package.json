@@ -24,8 +24,8 @@
   },
   "devDependencies": {
     "codacy-coverage": "^3.4.0",
-    "codecov": "^3.4.0",
-    "jest": "^24.8.0"
+    "codecov": "^3.7.0",
+    "jest": "^26.0.1"
   },
   "files": [
     "index.js",
