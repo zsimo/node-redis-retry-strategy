@@ -1,7 +1,6 @@
 "use strict";
 
-var path = require("path");
-var defaults = require(path.resolve(__dirname, "defaults"));
+var defaults = require("./defaults");
 
 
 module.exports = function init (moduleOptions) {
