@@ -11,7 +11,9 @@ A custom implementation of the [node_redis](https://github.com/NodeRedis/node_re
 Sometimes, if the Redis server is down, you need to have clients that don't give up and try to reconnect.  
 "node-redis-retry-strategy" is a function that returns the [node_redis](https://github.com/NodeRedis/node_redis) `retry_strategy` function.
 The strategy is: every `wait_time` try to connect for `number_of_retry_attempts` times (each time separated by `delay_of_retry_attempts`).
-By default, every 5 minutes, try 5 times to reconnect (every attempts is separated by 500 ms). It retries `forever`.
+By default, every 5 minutes, try 5 times to reconnect (every attempt is separated by 500 ms). It retries `forever`.
+ 
+`* 2.0 breaking change`: by default do not allow to start the service without a redis connection; to have the previous behaviour set `allow_to_start_without_connection`:`true`
 
 ## Install
 ```bash
@@ -43,12 +45,37 @@ var redisClient = require("redisClient.js");
 redisClient.on("connect", function () {
     console.log("connected!");
 });
+redisClient.on("end", function () {
+    console.log("redis connection has closed");
+});
+redisClient.on("reconnecting", function (o) {
+    console.log("redis client reconnecting", o.attempt, o.delay);
+});
 ```
 ## Options
-Accepts an options object as a parameter with 3 possible keys:
+It accepts options object as a parameter with 4 possible keys:
+#### allow_to_start_without_connection `type boolean`
+Default: `false`
+2 possible scenarios: 
+- `false` if there is no connection when the service starts, end reconnecting throwing an error and flush all commands
+- `true` allow to start the service without a redis connection
+```js
+var redis = require("redis");
+var retryStrategy = require("node-redis-retry-strategy");
+
+var client = redis.createClient({
+    host: "127.0.0.1",
+    port: 6379,
+    retry_strategy: retryStrategy({
+        allow_to_start_without_connection: true
+    })
+});
+
+module.exports = client;
+```
 #### number_of_retry_attempts `type number` ms
 Default: `5`  
-The number of attempts separated by the `delay_of_retry_attempts`. If set to 0, it end reconnecting with the built in error.
+The number of attempts separated by the `delay_of_retry_attempts`. If set to 0, it ends reconnecting with the built in error.
 ```js
 var redis = require("redis");
 var retryStrategy = require("node-redis-retry-strategy");

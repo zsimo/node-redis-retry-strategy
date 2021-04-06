@@ -1,7 +1,7 @@
 "use strict";
 
 var path = require("path");
-var times =require(path.resolve(__dirname, "times"));
+var defaults = require(path.resolve(__dirname, "defaults"));
 var retryStrategy = require(path.resolve(__dirname, "index"));
 
 describe("node-redis-retry-strategy", () => {
@@ -10,55 +10,55 @@ describe("node-redis-retry-strategy", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 0
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("first attempt, wait for DELAY_OF_RETRY_ATTEMPTS", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 1
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("second attempt, wait for DELAY_OF_RETRY_ATTEMPTS", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 2
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("third attempt, wait for DELAY_OF_RETRY_ATTEMPTS", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 3
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("fourth attempt, wait for DELAY_OF_RETRY_ATTEMPTS", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 4
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("fifth attempt, wait for DELAY_OF_RETRY_ATTEMPTS", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 5
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("after the fifth, wait for WAIT_TIME", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 6
-        })).toEqual(times.WAIT_TIME);
+        })).toEqual(defaults.WAIT_TIME);
     });
     test("after the sixth, wait for WAIT_TIME", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 7
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
     test("after the eleventh, wait for WAIT_TIME", () => {
         var strategy = retryStrategy();
         expect(strategy({
             attempt: 12
-        })).toEqual(times.WAIT_TIME);
+        })).toEqual(defaults.WAIT_TIME);
     });
 
     test("if number_of_retry_attempts is 0, end reconnecting with built in error", () => {
@@ -77,7 +77,7 @@ describe("node-redis-retry-strategy", () => {
         });
         expect(strategy({
             attempt: 3
-        })).toEqual(times.DELAY_OF_RETRY_ATTEMPTS);
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
 
     test("change wait_time", () => {
@@ -88,7 +88,26 @@ describe("node-redis-retry-strategy", () => {
         });
         expect(strategy({
             attempt: 12
-        })).toEqual(times.WAIT_TIME);
+        })).toEqual(defaults.WAIT_TIME);
+    });
+
+    test("redis server does not exits", () => {
+        var strategy = retryStrategy();
+        var result = strategy({
+            error: {
+                code: "ECONNREFUSED"
+            }
+        });
+        expect(result.name).toEqual("Error");
+        expect(result.message).toEqual("The server refused the connection");
+    });
+    test("do not check if redis exists at startup", () => {
+        var strategy = retryStrategy({
+            allow_to_start_without_connection: true
+        });
+        expect(strategy({
+            attempt: 0
+        })).toEqual(defaults.DELAY_OF_RETRY_ATTEMPTS);
     });
 
 });

@@ -1,22 +1,28 @@
 "use strict";
 
 var path = require("path");
-var times = require(path.resolve(__dirname, "times"));
+var defaults = require(path.resolve(__dirname, "defaults"));
+
 
 module.exports = function init (moduleOptions) {
 
+    var redisExists = false;
+
     if (moduleOptions) {
         if (moduleOptions.hasOwnProperty("number_of_retry_attempts") && !isNaN(moduleOptions.number_of_retry_attempts)) {
-            times.NUMBER_OF_RETRY_ATTEMPTS = moduleOptions.number_of_retry_attempts;
+            defaults.NUMBER_OF_RETRY_ATTEMPTS = moduleOptions.number_of_retry_attempts;
         }
         if (moduleOptions.hasOwnProperty("delay_of_retry_attempts") && !isNaN(moduleOptions.delay_of_retry_attempts)) {
-            times.DELAY_OF_RETRY_ATTEMPTS = moduleOptions.delay_of_retry_attempts;
+            defaults.DELAY_OF_RETRY_ATTEMPTS = moduleOptions.delay_of_retry_attempts;
         }
         if (moduleOptions.hasOwnProperty("wait_time") && !isNaN(moduleOptions.wait_time)) {
-            times.WAIT_TIME = moduleOptions.wait_time;
+            defaults.WAIT_TIME = moduleOptions.wait_time;
+        }
+        if (moduleOptions.hasOwnProperty("allow_to_start_without_connection") && typeof moduleOptions.allow_to_start_without_connection === "boolean") {
+            defaults.ALLOW_TO_START_WITHOUT_CONNECTION = moduleOptions.allow_to_start_without_connection;
         }
     }
-    
+
     /**
      * In case of Redis down, every WAIT_TIME try to connect for NUMBER_OF_RETRY_ATTEMPTS
      * times (each time separated by DELAY_OF_RETRY_ATTEMPTS).
@@ -29,20 +35,28 @@ module.exports = function init (moduleOptions) {
      */
     return function retryStrategy (options) {
 
-        if (!times.NUMBER_OF_RETRY_ATTEMPTS) {
+        if (!redisExists && !defaults.ALLOW_TO_START_WITHOUT_CONNECTION && options.error && options.error.code === "ECONNREFUSED") {
+            // End reconnecting on a specific error and flush all commands with
+            // a individual error
+            return new Error("The server refused the connection");
+        }
+
+        redisExists = true;
+
+        if (!defaults.NUMBER_OF_RETRY_ATTEMPTS) {
             // End reconnecting with built in error
             return undefined;
         }
 
         if (!options.attempt) {
             // if there is no attempt, try again
-            return times.DELAY_OF_RETRY_ATTEMPTS;
+            return defaults.DELAY_OF_RETRY_ATTEMPTS;
         }
 
-        if ((options.attempt % (times.NUMBER_OF_RETRY_ATTEMPTS + 1)) === 0) {
-            return times.WAIT_TIME;
+        if ((options.attempt % (defaults.NUMBER_OF_RETRY_ATTEMPTS + 1)) === 0) {
+            return defaults.WAIT_TIME;
         } else {
-            return times.DELAY_OF_RETRY_ATTEMPTS;
+            return defaults.DELAY_OF_RETRY_ATTEMPTS;
         }
     };
 
