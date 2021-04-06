@@ -29,7 +29,7 @@
   },
   "files": [
     "index.js",
-    "times.js"
+    "defaults.js"
   ],
   "keywords": [
     "node",
